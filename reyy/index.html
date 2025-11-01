@@ -32,8 +32,34 @@
         h1 {
             text-align: center;
             color: #ffffff;
-            margin-bottom: 30px;
+            margin-bottom: 20px; /* Sedikit dikurangi agar tidak terlalu jauh */
         }
+
+        /* === CSS BARU UNTUK KOTAK SALDO === */
+        .balance-container {
+            text-align: center;
+            font-size: 18px;
+            padding: 15px;
+            background-color: #3a3a4e; /* Warna yg sama dgn input */
+            border-radius: 8px;
+            margin-bottom: 25px;
+            border: 1px solid #4a4a5e;
+            color: #b0b0c0;
+        }
+
+        #balance-value {
+            font-weight: 600;
+            color: #5a5af5; /* Warna highlight biar keren */
+            font-size: 22px;
+            display: block; /* Biar rapi */
+            margin-top: 5px;
+        }
+
+        #balance-value.error {
+            color: #dc3545; /* Warna merah jika error */
+            font-size: 16px;
+        }
+        /* =================================== */
 
         .form-group {
             margin-bottom: 20px;
@@ -87,7 +113,6 @@
             transform: scale(0.98);
         }
 
-        /* Ini untuk pesan sukses atau error */
         #response-message {
             margin-top: 20px;
             padding: 12px;
@@ -120,7 +145,11 @@
 
     <div class="container">
         <h1>Tarik Saldo Admin 💸</h1>
-        
+
+        <div class="balance-container">
+            Saldo Anda Saat Ini:
+            <span id="balance-value">Memuat... 🔄</span>
+        </div>
         <form id="withdraw-form">
             <div class="form-group">
                 <label for="nominal">Nominal</label>
@@ -155,11 +184,84 @@
     </div>
 
     <script>
-        // Ambil elemen form dan pesan
+        // --- Variabel Global (Bisa dipakai semua fungsi) ---
+
+        // 1. Ganti 'YOUR_APIKEY_RAHASIA' dengan API Key kamu
+        // ---------------------------------------------------------------
+        // 🚨 PERINGATAN SUPER PENTING, AMAK! 🚨
+        // 
+        // JANGAN PERNAH meng-upload file ini ke GitHub Pages-mu 
+        // jika API Key-nya tertulis di sini! 
+        //
+        // Kenapa? 
+        // Karena SIAPA SAJA bisa membuka kodemu dan MENCURI API Key-mu.
+        // Kalau itu terjadi, mereka bisa MENGURAS SALDO-mu! 😱
+        // 
+        // File HTML ini HANYA BOLEH kamu pakai di komputermu sendiri
+        // (dibuka langsung di browser, BUKAN di-upload ke internet).
+        // 
+        // ---------------------------------------------------------------
+        const apiKey = 'ftS3uUCMOztd71uxhWp9MsVQchbBNQXLOcLJpkQW1W9aQg3gyXvUzJQkHW7bV54P6fKeWrzIWJf44nuuUh7xPTMQHY8lCtslMfez'; 
+        const apiDomain = 'https://zproxy.officialardytc27.workers.dev/?url=https://atlantich2h.com';
+
+        // Ambil elemen-elemen
         const withdrawForm = document.getElementById('withdraw-form');
         const messageDiv = document.getElementById('response-message');
+        const balanceValueSpan = document.getElementById('balance-value'); // Elemen baru
 
-        // Saat tombol "Cairkan Dana" di-klik
+
+        // --- FUNGSI BARU UNTUK CEK SALDO ---
+        async function checkBalance() {
+            const endpoint = apiDomain + '/get_profile';
+            
+            // Tampilkan loading di kotak saldo
+            balanceValueSpan.textContent = 'Memuat... 🔄';
+            balanceValueSpan.className = '';
+
+            // Siapkan body request
+            const bodyParams = new URLSearchParams();
+            bodyParams.append('api_key', apiKey);
+
+            try {
+                const response = await fetch(endpoint, {
+                    method: 'POST', // Sesuai contoh curl --data-urlencode
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: bodyParams.toString()
+                });
+
+                const result = await response.json();
+
+                if (result.status === true || result.status === "true") {
+                    // Sukses! Tampilkan saldo
+                    // Kita ubah angka biasa (misal 10000) jadi format Rupiah (misal 10.000)
+                    const formattedBalance = parseInt(result.data.balance).toLocaleString('id-ID');
+                    balanceValueSpan.textContent = 'Rp ' + formattedBalance;
+                } else {
+                    // Gagal ambil saldo
+                    balanceValueSpan.textContent = 'Gagal memuat! 😭';
+                    balanceValueSpan.className = 'error';
+                    console.error('Gagal cek saldo:', result.message);
+                }
+
+            } catch (error) {
+                // Error jaringan/CORS
+                console.error('Error Cek Saldo:', error);
+                balanceValueSpan.textContent = 'Error Jaringan! 🧐';
+                balanceValueSpan.className = 'error';
+            }
+        }
+
+        // --- Event Listener (dijalankan saat halaman siap) ---
+        // Ini akan memanggil fungsi checkBalance() saat halaman pertama kali dibuka
+        document.addEventListener('DOMContentLoaded', function() {
+            checkBalance();
+        });
+
+
+        // --- Event Listener (untuk form submit) ---
+        // (Ini kode lamamu, tapi sudah disesuaikan sedikit)
         withdrawForm.addEventListener('submit', async function(event) {
             event.preventDefault(); // Mencegah form refresh halaman
 
@@ -167,44 +269,23 @@
             messageDiv.textContent = 'Memproses penarikan... 🔄';
             messageDiv.className = 'info';
 
-            // 1. Ganti 'YOUR_APIKEY_RAHASIA' dengan API Key kamu
-            // ---------------------------------------------------------------
-            // 🚨 PERINGATAN SUPER PENTING, AMAK! 🚨
-            // 
-            // JANGAN PERNAH meng-upload file ini ke GitHub Pages-mu 
-            // jika API Key-nya tertulis di sini! 
-            //
-            // Kenapa? 
-            // Karena SIAPA SAJA bisa membuka kodemu dan MENCURI API Key-mu.
-            // Kalau itu terjadi, mereka bisa MENGURAS SALDO-mu! 😱
-            // 
-            // File HTML ini HANYA BOLEH kamu pakai di komputermu sendiri
-            // (dibuka langsung di browser, BUKAN di-upload ke internet).
-            // 
-            // ---------------------------------------------------------------
-            const apiKey = 'ftS3uUCMOztd71uxhWp9MsVQchbBNQXLOcLJpkQW1W9aQg3gyXvUzJQkHW7bV54P6fKeWrzIWJf44nuuUh7xPTMQHY8lCtslMfez'; 
-
-
             // Ambil data dari form
             const nominal = document.getElementById('nominal').value;
             const kodeBank = document.getElementById('kode_bank').value;
             const nomorAkun = document.getElementById('nomor_akun').value;
             const namaPemilik = document.getElementById('nama_pemilik').value;
 
-            // Data lain yang dibutuhkan API (sesuai contohmu)
-            // Kita buat ref_id unik pakai tanggal/waktu
+            // Data lain yang dibutuhkan API
             const refId = 'withdraw-' + Date.now(); 
             const emailAdmin = 'akunrey70@gmail.com'; // Ganti dengan email admin-mu
             const phoneAdmin = '089525036410'; // Ganti dengan no HP admin-mu
             const note = 'Withdraw Saldo Admin ID ' + refId;
 
-            // Domain API
-            const apiDomain = 'https://zproxy.officialardytc27.workers.dev/?url=https://atlantich2h.com';
             const endpoint = apiDomain + '/transfer/create';
 
             // Data ini harus dikirim dalam format 'urlencoded'
             const bodyParams = new URLSearchParams();
-            bodyParams.append('api_key', apiKey);
+            bodyParams.append('api_key', apiKey); // apiKey diambil dari atas
             bodyParams.append('ref_id', refId);
             bodyParams.append('kode_bank', kodeBank);
             bodyParams.append('nomor_akun', nomorAkun);
@@ -232,9 +313,13 @@
                     messageDiv.textContent = `BERHASIL! 🎉 ID: ${result.data.id}, Status: ${result.data.status}. Total diterima: ${result.data.nominal}`;
                     messageDiv.className = 'success';
                     withdrawForm.reset(); // Kosongkan form
+
+                    // === PERUBAHAN PENTING ===
+                    // Panggil fungsi cek saldo lagi untuk update tampilan saldo!
+                    checkBalance(); 
+                    
                 } else {
                     // Jika gagal (misal, saldo kurang, nomor salah, dll)
-                    // Ini menjawab logikamu: "jika saldonya tidak ada atau kurang otomatis tidak bisa di tarik"
                     messageDiv.textContent = `GAGAL! 😢 Pesan: ${result.message}`;
                     messageDiv.className = 'error';
                 }
