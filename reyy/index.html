@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Tarik Saldo 💸</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        /* Ini CSS untuk style "Elegan & Modern" */
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #1a1a2e; /* Biru dongker gelap */
+            color: #e0e0e0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 450px;
+            background-color: #2a2a3e; /* Sedikit lebih terang */
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            text-align: center;
+            color: #ffffff;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #b0b0c0;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px 15px;
+            background-color: #3a3a4e;
+            border: 1px solid #4a4a5e;
+            border-radius: 8px;
+            color: #ffffff;
+            font-size: 16px;
+            box-sizing: border-box; /* Biar padding tidak merusak layout */
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #5a5af5; /* Warna highlight */
+            box-shadow: 0 0 0 3px rgba(90, 90, 245, 0.3);
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            background-color: #5a5af5; /* Biru/Ungu modern */
+            color: #ffffff;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.1s;
+        }
+
+        button:hover {
+            background-color: #4a4af0;
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        /* Ini untuk pesan sukses atau error */
+        #response-message {
+            margin-top: 20px;
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 14px;
+            display: none; /* Sembunyi dulu */
+        }
+
+        #response-message.success {
+            background-color: #28a745; /* Hijau */
+            color: #ffffff;
+            display: block;
+        }
+
+        #response-message.error {
+            background-color: #dc3545; /* Merah */
+            color: #ffffff;
+            display: block;
+        }
+
+        #response-message.info {
+            background-color: #17a2b8; /* Biru info */
+            color: #ffffff;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Tarik Saldo Admin 💸</h1>
+        
+        <form id="withdraw-form">
+            <div class="form-group">
+                <label for="nominal">Nominal</label>
+                <input type="number" id="nominal" placeholder="Contoh: 10000" required>
+            </div>
+
+            <div class="form-group">
+                <label for="kode_bank">E-Wallet Tujuan</label>
+                <select id="kode_bank" required>
+                    <option value="">-- Pilih E-Wallet --</option>
+                    <option value="DANA">DANA</option>
+                    <option value="OVO">OVO</option>
+                    <option value="GOPAY">GoPay</option>
+                    <option value="SHOPEEPAY">ShopeePay</option>
+                    </select>
+            </div>
+
+            <div class="form-group">
+                <label for="nomor_akun">Nomor E-Wallet</label>
+                <input type="tel" id="nomor_akun" placeholder="Contoh: 08123456789" required>
+            </div>
+
+            <div class="form-group">
+                <label for="nama_pemilik">Nama Pemilik Akun</label>
+                <input type="text" id="nama_pemilik" placeholder="Contoh: Amak Keren" required>
+            </div>
+
+            <button type="submit">Cairkan Dana Sekarang 🚀</button>
+        </form>
+
+        <div id="response-message"></div>
+    </div>
+
+    <script>
+        // Ambil elemen form dan pesan
+        const withdrawForm = document.getElementById('withdraw-form');
+        const messageDiv = document.getElementById('response-message');
+
+        // Saat tombol "Cairkan Dana" di-klik
+        withdrawForm.addEventListener('submit', async function(event) {
+            event.preventDefault(); // Mencegah form refresh halaman
+
+            // Tampilkan pesan "Loading"
+            messageDiv.textContent = 'Memproses penarikan... 🔄';
+            messageDiv.className = 'info';
+
+            // 1. Ganti 'YOUR_APIKEY_RAHASIA' dengan API Key kamu
+            // ---------------------------------------------------------------
+            // 🚨 PERINGATAN SUPER PENTING, AMAK! 🚨
+            // 
+            // JANGAN PERNAH meng-upload file ini ke GitHub Pages-mu 
+            // jika API Key-nya tertulis di sini! 
+            //
+            // Kenapa? 
+            // Karena SIAPA SAJA bisa membuka kodemu dan MENCURI API Key-mu.
+            // Kalau itu terjadi, mereka bisa MENGURAS SALDO-mu! 😱
+            // 
+            // File HTML ini HANYA BOLEH kamu pakai di komputermu sendiri
+            // (dibuka langsung di browser, BUKAN di-upload ke internet).
+            // 
+            // ---------------------------------------------------------------
+            const apiKey = 'ftS3uUCMOztd71uxhWp9MsVQchbBNQXLOcLJpkQW1W9aQg3gyXvUzJQkHW7bV54P6fKeWrzIWJf44nuuUh7xPTMQHY8lCtslMfez'; 
+
+
+            // Ambil data dari form
+            const nominal = document.getElementById('nominal').value;
+            const kodeBank = document.getElementById('kode_bank').value;
+            const nomorAkun = document.getElementById('nomor_akun').value;
+            const namaPemilik = document.getElementById('nama_pemilik').value;
+
+            // Data lain yang dibutuhkan API (sesuai contohmu)
+            // Kita buat ref_id unik pakai tanggal/waktu
+            const refId = 'withdraw-' + Date.now(); 
+            const emailAdmin = 'akunrey70@gmail.com'; // Ganti dengan email admin-mu
+            const phoneAdmin = '089525036410'; // Ganti dengan no HP admin-mu
+            const note = 'Withdraw Saldo Admin ID ' + refId;
+
+            // Domain API
+            const apiDomain = 'https://zproxy.officialardytc27.workers.dev/?url=https://atlantich2h.com';
+            const endpoint = apiDomain + '/transfer/create';
+
+            // Data ini harus dikirim dalam format 'urlencoded'
+            const bodyParams = new URLSearchParams();
+            bodyParams.append('api_key', apiKey);
+            bodyParams.append('ref_id', refId);
+            bodyParams.append('kode_bank', kodeBank);
+            bodyParams.append('nomor_akun', nomorAkun);
+            bodyParams.append('nama_pemilik', namaPemilik);
+            bodyParams.append('nominal', nominal);
+            bodyParams.append('email', emailAdmin);
+            bodyParams.append('phone', phoneAdmin);
+            bodyParams.append('note', note);
+
+            // Kirim data ke API pakai 'fetch'
+            try {
+                const response = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: bodyParams.toString()
+                });
+
+                const result = await response.json();
+
+                // Cek respon dari API
+                if (result.status === true) {
+                    // Jika sukses
+                    messageDiv.textContent = `BERHASIL! 🎉 ID: ${result.data.id}, Status: ${result.data.status}. Total diterima: ${result.data.nominal}`;
+                    messageDiv.className = 'success';
+                    withdrawForm.reset(); // Kosongkan form
+                } else {
+                    // Jika gagal (misal, saldo kurang, nomor salah, dll)
+                    // Ini menjawab logikamu: "jika saldonya tidak ada atau kurang otomatis tidak bisa di tarik"
+                    messageDiv.textContent = `GAGAL! 😢 Pesan: ${result.message}`;
+                    messageDiv.className = 'error';
+                }
+
+            } catch (error) {
+                // Jika ada error jaringan atau error CORS
+                console.error('Error:', error);
+                messageDiv.textContent = 'Terjadi Error Jaringan atau CORS. Cek F12 (Console) untuk detail. 🧐';
+                messageDiv.className = 'error';
+            }
+        });
+    </script>
+
+</body>
+</html>
