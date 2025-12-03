@@ -490,7 +490,7 @@
     // Fungsi untuk cek status deposit Atlantic
     async function cekStatusDepositAtlantic(id) {
         const urlencoded = new URLSearchParams();
-        urlencoded.append("api_key", KUNCI_API);
+        urlencoded.append("apikey", KUNCI_API);
         urlencoded.append("id", id);
 
         const requestOptions = {
