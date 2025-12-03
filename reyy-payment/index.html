@@ -277,9 +277,9 @@
 
 <script>
     // Konstanta API Atlantic
-    const KUNCI_API = 'GamesNowTopUp'; // Ganti dengan API key Atlantic Anda
-    const URL_API_BASE = 'https://zproxy.officialardytc27.workers.dev?url=https://gamesnowku.xyz'; // Base URL Atlantic
-    const URL_API_CREATE = URL_API_BASE + '/deposit/create.js';
+    const KUNCI_API = 'ftS3uUCMOztd71uxhWp9MsVQchbBNQXLOcLJpkQW1W9aQg3gyXvUzJQkHW7bV54P6fKeWrzIWJf44nuuUh7xPTMQHY8lCtslMfez'; // Ganti dengan API key Atlantic Anda
+    const URL_API_BASE = 'https://zproxy.officialardytc27.workers.dev?url=https://atlantich2h.com'; // Base URL Atlantic
+    const URL_API_CREATE = URL_API_BASE + '/deposit/create';
     const URL_API_STATUS = URL_API_BASE + '/deposit/status';
     const URL_API_INSTANT = URL_API_BASE + '/deposit/instant';
     const URL_API_CANCEL = URL_API_BASE + '/deposit/cancel';
@@ -469,7 +469,7 @@
         urlencoded.append("reff_id", "deposit_" + Date.now()); // Generate unique reference ID
         urlencoded.append("nominal", nominal.toString());
         urlencoded.append("type", "ewallet");
-        urlencoded.append("metode", "qris");
+        urlencoded.append("metode", "qrisfast");
 
         const requestOptions = {
             method: 'POST',
@@ -490,7 +490,7 @@
     // Fungsi untuk cek status deposit Atlantic
     async function cekStatusDepositAtlantic(id) {
         const urlencoded = new URLSearchParams();
-        urlencoded.append("apikey", KUNCI_API);
+        urlencoded.append("api_key", KUNCI_API);
         urlencoded.append("id", id);
 
         const requestOptions = {
